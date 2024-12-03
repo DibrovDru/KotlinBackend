@@ -1,27 +1,31 @@
+
 plugins {
-    kotlin("jvm") version "1.9.0"
-    application
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.ktor)
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "ru.phystech"
+version = "0.0.1"
+
+application {
+    mainClass.set("io.ktor.server.jetty.jakarta.EngineMain")
+
+    val isDevelopment: Boolean = project.ext.has("development")
+    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-
-kotlin {
-    jvmToolchain(8)
-}
-
-application {
-    mainClass.set("MainKt")
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.jetty.jakarta)
+    implementation(libs.logback.classic)
+    implementation(libs.ktor.server.config.yaml)
+    implementation("io.ktor:ktor-server-content-negotiation:3.0.1")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
+    testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotlin.test.junit)
 }
